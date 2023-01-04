@@ -1,11 +1,14 @@
 from setuptools import setup
 
+with open("__VERSION__") as f:
+    version = f.read().strip()
+
 with open("requirements.txt") as f:
     install_requires = f.read().splitlines()
 
 setup(
     name="flake8-unused-globals",
-    version="0.1.0",
+    version=version,
     python_requires=">=3.10,<3.11",
     include_package_data=True,
     install_requires=install_requires,

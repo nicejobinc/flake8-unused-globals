@@ -6,6 +6,10 @@ CHECK = "unused global variable"
 E = 0
 
 
+with open("__VERSION__") as f:
+    VERSION = f.read().strip()
+
+
 class GlobalVariableLoadCounter(ast.NodeVisitor):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -25,7 +29,7 @@ class GlobalVariableLoadCounter(ast.NodeVisitor):
 
 class Plugin:
     name = "flake8-unused-globals"
-    version = "0.1.0"
+    version = VERSION
 
     def __init__(self, tree: ast.Module) -> None:
         self.tree = tree
