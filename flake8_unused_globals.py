@@ -3,11 +3,6 @@ from typing import Iterable, Any
 
 ERROR_CODE = "UUG001"
 CHECK = "unused global variable"
-E = 0
-
-
-with open("__VERSION__") as f:
-    VERSION = f.read().strip()
 
 
 class GlobalVariableLoadCounter(ast.NodeVisitor):
@@ -29,7 +24,7 @@ class GlobalVariableLoadCounter(ast.NodeVisitor):
 
 class Plugin:
     name = "flake8-unused-globals"
-    version = VERSION
+    version = "0.1.6"
 
     def __init__(self, tree: ast.Module) -> None:
         self.tree = tree
