@@ -24,7 +24,7 @@ class GlobalVariableLoadCounter(ast.NodeVisitor):
 
 class Plugin:
     name = "flake8-unused-globals"
-    version = "0.1.6"
+    version = "0.1.7"
 
     def __init__(self, tree: ast.Module) -> None:
         self.tree = tree
