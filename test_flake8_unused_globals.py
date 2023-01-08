@@ -11,7 +11,7 @@ def test_no_unused() -> None:
             return B
     """)
     plugin = Plugin(ast.parse(source))
-    result = list(plugin.run())
+    result = plugin.run()
 
     assert result == []
 
@@ -25,7 +25,25 @@ def test_one_unused() -> None:
             return B
     """)
     plugin = Plugin(ast.parse(source))
-    result = list(plugin.run())
+    result = plugin.run()
+
+    expected = [
+        (1, 0, "UUG001 Unused global variable 'A'", "unused global variable")
+    ]
+    assert result == expected
+
+
+def test_unused_at_eof_not_flagged() -> None:
+    source = inspect.cleandoc("""
+        A = 5
+
+        def f() -> None:
+            return
+
+        B = 6
+    """)
+    plugin = Plugin(ast.parse(source))
+    result = plugin.run()
 
     expected = [
         (1, 0, "UUG001 Unused global variable 'A'", "unused global variable")

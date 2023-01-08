@@ -40,6 +40,7 @@ class Plugin:
         }
 
     def run(self) -> Iterable[tuple[int, int, str, str]]:
+        errors_by_id = {}
         load_counter = GlobalVariableLoadCounter()
         load_counter.visit(self.tree)
 
@@ -47,9 +48,21 @@ class Plugin:
             if id_ in self.global_variables and loads == 0:
                 store_info = load_counter.id_to_store_info[id_]
                 text = f"{ERROR_CODE} Unused global variable '{id_}'"
-                yield (
+                error_info = (
                     store_info["end_lineno"],
                     store_info["col_offset"],
                     text,
                     CHECK
                 )
+                errors_by_id[id_] = error_info
+
+        for item in self.tree.body[::-1]:
+            if isinstance(item, ast.Assign):
+                for target in item.targets:
+                    if isinstance(target, ast.Name):
+                        if target.id in errors_by_id:
+                            errors_by_id.pop(target.id)
+            else:
+                break
+
+        return list(errors_by_id.values())
