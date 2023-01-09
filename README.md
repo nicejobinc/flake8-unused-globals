@@ -7,5 +7,3 @@ This package adds the following warnings:
 - `UUG001`: An unused global variable.
 
 There are no configuration options at this time.
-
-It is recommended that users ignore UUG001 in constants modules.

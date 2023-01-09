@@ -3,7 +3,7 @@ from typing import Iterable, Any
 
 ERROR_CODE = "UUG001"
 CHECK = "unused global variable"
-VERSION = "0.1.8"
+VERSION = "0.1.9"
 
 
 class GlobalVariableLoadCounter(ast.NodeVisitor):
