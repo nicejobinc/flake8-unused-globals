@@ -49,3 +49,15 @@ def test_unused_at_eof_not_flagged() -> None:
         (1, 0, "UUG001 Unused global variable 'A'", "unused global variable")
     ]
     assert result == expected
+
+
+def test_constants_file_not_flagged_some_annotated() -> None:
+    source = inspect.cleandoc("""
+        STRINGS = ["A", "B"]
+        NUMBER: int = 5
+        FLOATING_NUMBER: float = 5.0
+    """)
+    plugin = Plugin(ast.parse(source))
+    result = plugin.run()
+
+    assert result == []

@@ -3,6 +3,7 @@ from typing import Iterable, Any
 
 ERROR_CODE = "UUG001"
 CHECK = "unused global variable"
+VERSION = "0.1.8"
 
 
 class GlobalVariableLoadCounter(ast.NodeVisitor):
@@ -24,20 +25,27 @@ class GlobalVariableLoadCounter(ast.NodeVisitor):
 
 class Plugin:
     name = "flake8-unused-globals"
-    version = "0.1.7"
+    version = VERSION
 
     def __init__(self, tree: ast.Module) -> None:
         self.tree = tree
 
     @property
     def global_variables(self) -> set[str]:
-        return {
-            target.id
-            for assignment in self.tree.body
-            if isinstance(assignment, ast.Assign)
-            for target in assignment.targets
-            if isinstance(target, ast.Name)
-        }
+        variables: set[str] = set()
+
+        for assignment in self.tree.body:
+            if isinstance(assignment, ast.Assign):
+                for target in assignment.targets:
+                    if isinstance(target, ast.Name):
+                        variables.add(target.id)
+            elif (
+                isinstance(assignment, ast.AnnAssign)
+                and isinstance(assignment.target, ast.Name)
+            ):
+                variables.add(assignment.target.id)
+
+        return variables
 
     def run(self) -> Iterable[tuple[int, int, str, str]]:
         errors_by_id = {}
@@ -59,9 +67,17 @@ class Plugin:
         for item in self.tree.body[::-1]:
             if isinstance(item, ast.Assign):
                 for target in item.targets:
-                    if isinstance(target, ast.Name):
-                        if target.id in errors_by_id:
-                            errors_by_id.pop(target.id)
+                    if (
+                        isinstance(target, ast.Name)
+                        and target.id in errors_by_id
+                    ):
+                        errors_by_id.pop(target.id)
+            elif (
+                isinstance(item, ast.AnnAssign)
+                and isinstance(item.target, ast.Name)
+                and item.target.id in errors_by_id
+            ):
+                errors_by_id.pop(item.target.id)
             else:
                 break
 
